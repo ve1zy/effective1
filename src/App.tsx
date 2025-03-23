@@ -1,12 +1,13 @@
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import Routes from "./routes";
+import styles from "./App.module.scss";
 
 const App = () => {
   return (
-    <div>
+    <div className={styles.appContainer}>
       <Header />
-      <main>
+      <main className={styles.mainContent}>
         <Routes />
       </main>
       <Footer />

@@ -1,16 +1,10 @@
-import { useState } from "react";
 import ComicCard from "../../components/ComicCard/ComicCard";
 import { comics } from "../../mocks/comics";
+import useFavorites from "../../hooks/useFavorites";
 import styles from "./Favorite.module.scss";
 
 const Favorite = () => {
-  const [favorites, setFavorites] = useState<number[]>([]);
-
-  const toggleFavorite = (id: number) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
-    );
-  };
+  const { favorites, toggleFavorite } = useFavorites();
 
   const favoriteComics = comics.filter((comic) => favorites.includes(comic.id));
 
@@ -22,8 +16,8 @@ const Favorite = () => {
           <ComicCard
             key={comic.id}
             comic={comic}
-            isFavorite={true}
-            onToggleFavorite={toggleFavorite}
+            isFavorite={true} 
+            onToggleFavorite={() => toggleFavorite(comic.id)} 
           />
         ))}
       </div>
