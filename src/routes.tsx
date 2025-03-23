@@ -8,7 +8,7 @@ const Routes = () => {
     { path: "/", element: <Comics /> },
     { path: "/comics", element: <Comics /> },
     { path: "/favorite", element: <Favorite /> },
-    { path: "/comic/:id", element: <ComicDetails /> }, // Маршрут для деталей комикса
+    { path: "/comic/:id", element: <ComicDetails /> },
   ]);
 
   return routes;

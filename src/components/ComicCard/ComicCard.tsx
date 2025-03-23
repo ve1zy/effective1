@@ -1,4 +1,4 @@
-import { useState } from "react"; // Удалите React, если он не используется
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./ComicCard.module.scss";
 

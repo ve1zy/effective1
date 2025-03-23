@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom"; // Добавьте Link
+import { Link, useParams } from "react-router-dom";
 import { comics } from "../../mocks/comics";
 import styles from "./ComicDetails.module.scss";
 
