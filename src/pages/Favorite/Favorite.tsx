@@ -8,7 +8,6 @@ import styles from './Favorite.module.scss';
 const Favorite = observer(() => {
   const { favorites} = comicsStore;
 
-  // Загрузка избранных комиксов при монтировании
   useEffect(() => {
     comicsStore.loadFavorites();
   }, []);

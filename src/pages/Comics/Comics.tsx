@@ -5,19 +5,28 @@ import { comicsStore } from '../../stores/comicsStore';
 import styles from './Comics.module.scss';
 
 const Comics = observer(() => {
-  const { comics, offset, total, limit, loading, loadComics } = comicsStore;
+  const { 
+    comics, 
+    currentPage, 
+    total, 
+    limit, 
+    loading, 
+    loadComics, 
+    setCurrentPage 
+  } = comicsStore;
 
   useEffect(() => {
-    loadComics(0);
+    loadComics(currentPage);
   }, []);
 
-  const handlePageChange = (newOffset: number) => {
-    loadComics(newOffset);     window.scrollTo(0, 0);
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    loadComics(newPage);
+    window.scrollTo(0, 0);
   };
 
   const renderPagination = () => {
     const pageCount = Math.ceil(total / limit);
-    const currentPage = offset / limit + 1;
     const pagesToShow = 5;
 
     let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
@@ -30,35 +39,35 @@ const Comics = observer(() => {
     return (
       <div className={styles.pagination}>
         <button
-          onClick={() => handlePageChange(0)}
-          disabled={offset === 0}
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
         >
           « First
         </button>
         <button
-          onClick={() => handlePageChange(offset - limit)}
-          disabled={offset === 0}
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
         >
           ‹ Prev
         </button>
         {Array.from({ length: endPage - startPage + 1 }).map((_, i) => (
           <button
             key={startPage + i}
-            onClick={() => handlePageChange((startPage + i - 1) * limit)}
-            className={offset === (startPage + i - 1) * limit ? styles.active : ''}
+            onClick={() => handlePageChange(startPage + i)}
+            className={currentPage === startPage + i ? styles.active : ''}
           >
             {startPage + i}
           </button>
         ))}
         <button
-          onClick={() => handlePageChange(offset + limit)}
-          disabled={offset + limit >= total}
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === pageCount}
         >
           Next ›
         </button>
         <button
-          onClick={() => handlePageChange((pageCount - 1) * limit)}
-          disabled={offset + limit >= total}
+          onClick={() => handlePageChange(pageCount)}
+          disabled={currentPage === pageCount}
         >
           Last »
         </button>
@@ -66,19 +75,27 @@ const Comics = observer(() => {
     );
   };
 
-  if (loading && !comics.length) {
-    return <div className={styles.comics}>Loading...</div>;
-  }
-
   return (
     <div className={styles.comics}>
       <h1>Marvel Comics</h1>
-      <div className={styles.list}>
-        {comics.map(comic => (
-          <ComicCard key={comic.id} comic={comic} />
-        ))}
-      </div>
-      {total > limit && renderPagination()}
+      
+      {loading && !comics.length ? (
+        <div className={styles.loadingMessage}>Loading comics...</div>
+      ) : comics.length === 0 ? (
+        <div className={styles.emptyMessage}>No comics found</div>
+      ) : (
+        <>
+          <div className={styles.comicsGrid}>
+            {comics.map(comic => (
+              <div key={comic.id} className={styles.comicCardWrapper}>
+                <ComicCard comic={comic} />
+              </div>
+            ))}
+          </div>
+          
+          {total > limit && renderPagination()}
+        </>
+      )}
     </div>
   );
 });

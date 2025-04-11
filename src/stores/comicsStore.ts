@@ -13,7 +13,7 @@ class ComicsStore {
   limit = 8;
   loading = false;
   error: string | null = null;
-
+  currentPage = 1;
   constructor() {
     makeAutoObservable(this);
     this.initStore();
@@ -36,7 +36,9 @@ class ComicsStore {
       }
     );
   }
-
+  setCurrentPage = (page: number) => {
+    this.currentPage = page;
+  };
   private initStore() {
     this.setupReactions();
     this.loadFavorites();
@@ -56,32 +58,25 @@ class ComicsStore {
     );
   }
   
-  loadComics = async (offset: number) => {
+  loadComics = async (page: number = this.currentPage) => {
+    const offset = (page - 1) * this.limit; 
     try {
       runInAction(() => {
         this.loading = true;
         this.error = null;
       });
-
+  
       const response = await getComics(offset, this.limit);
       
       runInAction(() => {
         this.comics = response.results;
         this.total = response.total;
         this.offset = offset;
+        this.currentPage = page;
       });
     } catch (err) {
-      runInAction(() => {
-        this.error = err instanceof Error ? err.message : 'Failed to load comics';
-      });
-      throw err;
-    } finally {
-      runInAction(() => {
-        this.loading = false;
-      });
     }
   };
-
   loadComicDetails = async (id: number) => {
     try {
       runInAction(() => {
@@ -89,19 +84,18 @@ class ComicsStore {
         this.error = null;
         this.relatedComics = [];
       });
-
+  
       const comic = await getComicById(id);
       
       runInAction(() => {
         this.currentComic = comic;
       });
-
-       await this.loadRelatedComics(comic.title);
+  
+      await this.loadRelatedComics(comic);
     } catch (err) {
       runInAction(() => {
         this.error = err instanceof Error ? err.message : 'Failed to load comic details';
       });
-      throw err;
     } finally {
       runInAction(() => {
         this.loading = false;
@@ -109,30 +103,60 @@ class ComicsStore {
     }
   };
 
-  loadRelatedComics = async (title: string) => {
+  loadRelatedComics = async (comic: Comic) => {
     try {
       runInAction(() => {
         this.loading = true;
         this.relatedComics = [];
       });
   
-      const baseTitle = title.replace(/#\d+.*/, '').trim();
-      
-      const response = await getComics(0, 20, {
-        titleStartsWith: baseTitle,
-        orderBy: '-onsaleDate', 
-        limit: 20
+      if (comic.series) {
+        const seriesId = comic.series.resourceURI.split('/').pop();
+        const seriesResponse = await getComics(0, 20, {
+          series: seriesId,
+          orderBy: '-modified',
+          limit: 8
+        });
+  
+        const seriesComics = seriesResponse.results.filter(c => c.id !== comic.id);
+        
+        if (seriesComics.length > 0) {
+          runInAction(() => {
+            this.relatedComics = seriesComics.slice(0, 4);
+          });
+          return;
+        }
+      }
+  
+      const baseTitle = comic.title.replace(/#\d+.*/, '').trim();
+      if (baseTitle) {
+        const titleResponse = await getComics(0, 20, {
+          titleStartsWith: baseTitle,
+          orderBy: '-modified',
+          limit: 10
+        });
+  
+        const titleComics = titleResponse.results.filter(c => c.id !== comic.id);
+        
+        if (titleComics.length > 0) {
+          runInAction(() => {
+            this.relatedComics = titleComics.slice(0, 4);
+          });
+          return;
+        }
+      }
+  
+      const randomResponse = await getComics(Math.floor(Math.random() * 100), 4, {
+        orderBy: '-modified',
+        limit: 4
       });
   
       runInAction(() => {
-         this.relatedComics = response.results
-          .filter(c => c.id !== this.currentComic?.id)
+        this.relatedComics = randomResponse.results
+          .filter(c => c.id !== comic.id)
           .slice(0, 4);
-        
-        if (this.relatedComics.length === 0) {
-          this.loadAlternativeComics();
-        }
       });
+  
     } catch (err) {
       console.error('Failed to load related comics:', err);
       runInAction(() => {
@@ -144,22 +168,7 @@ class ComicsStore {
       });
     }
   };
-  private loadAlternativeComics = async () => {
-    try {
-      const response = await getComics(0, 4, {
-        orderBy: '-onsaleDate',
-        limit: 4
-      });
-      
-      runInAction(() => {
-        this.relatedComics = response.results
-          .filter(c => c.id !== this.currentComic?.id)
-          .slice(0, 4);
-      });
-    } catch (err) {
-      console.error('Failed to load alternative comics:', err);
-    }
-  };
+  
 
   loadFavorites = () => {
     try {

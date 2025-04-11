@@ -9,7 +9,7 @@ const baseUrl = 'https://gateway.marvel.com/v1/public';
     id: number;
     title: string;
     thumbnail: string;
-    description?: string; // Делаем необязательным
+    description?: string;
     issueNumber?: number;
     series?: {
       resourceURI: string;
@@ -60,10 +60,8 @@ const api = axios.create({
   baseURL: baseUrl,
 });
 
-// Интерцептор для преобразования ответа
 api.interceptors.response.use(
   (response: AxiosResponse<MarvelApiResponse<ComicApiResponse>>) => {
-    // Возвращаем стандартный AxiosResponse, но с преобразованными данными
     return {
       ...response,
       data: response.data.data
@@ -77,7 +75,7 @@ api.interceptors.response.use(
 
 export const getComics = async (
   offset: number = 0,
-  limit: number = 20,
+  limit: number = 10,
   additionalParams: Record<string, any> = {}
 ): Promise<ComicsResponse> => {
   const params = {
