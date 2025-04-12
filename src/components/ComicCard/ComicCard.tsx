@@ -1,19 +1,26 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import styles from "./ComicCard.module.scss";
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { comicsStore } from '../../stores/comicsStore';
+import { Comic } from '../../api/marvel';
+import styles from './ComicCard.module.scss';
 
 interface ComicCardProps {
-  comic: {
-    id: number;
-    title: string;
-    thumbnail: string;
-  };
-  isFavorite: boolean;
-  onToggleFavorite: (id: number) => void;
+  comic: Comic;
+  showFavoriteButton?: boolean;
+  isFavorite?: boolean; // Переименовали isFavoriteDefault в isFavorite
 }
 
-const ComicCard = ({ comic, isFavorite, onToggleFavorite }: ComicCardProps) => {
+const ComicCard = observer(({ 
+  comic, 
+  showFavoriteButton = true,
+  isFavorite: isFavoriteProp
+}: ComicCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { toggleFavorite } = comicsStore;
+
+  // Используем переданное значение или получаем из store
+  const isFavorite = isFavoriteProp ?? comicsStore.isFavorite(comic.id);
 
   return (
     <div
@@ -25,16 +32,16 @@ const ComicCard = ({ comic, isFavorite, onToggleFavorite }: ComicCardProps) => {
         <img src={comic.thumbnail} alt={comic.title} />
         <h3>{comic.title}</h3>
       </Link>
-      {isHovered && (
+      {showFavoriteButton && isHovered && (
         <button
           className={styles.favoriteButton}
-          onClick={() => onToggleFavorite(comic.id)}
+          onClick={() => toggleFavorite(comic)}
         >
           {isFavorite ? "❤️" : "♡"}
         </button>
       )}
     </div>
   );
-};
+});
 
 export default ComicCard;
