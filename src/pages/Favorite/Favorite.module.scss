@@ -1,19 +1,19 @@
 .favorite {
-    padding: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    font-family: 'Roboto', sans-serif;
-  
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #dc3545; 
-      font-family: 'Montserrat', sans-serif;
-    }
-  
-    .list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #dc3545; 
+    font-family: 'Montserrat', sans-serif;
   }
+
+  .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+}

@@ -1,84 +1,103 @@
-import { useState } from "react";
-import ComicCard from "../../components/ComicCard/ComicCard";
-import { comics } from "../../mocks/comics";
-import useFavorites from "../../hooks/useFavorites";
-import styles from "./Comics.module.scss";
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import ComicCard from '../../components/ComicCard/ComicCard';
+import { comicsStore } from '../../stores/comicsStore';
+import styles from './Comics.module.scss';
 
-const Comics = () => {
-  const { favorites, toggleFavorite } = useFavorites();
-  const [currentPage, setCurrentPage] = useState(1);
-  const comicsPerPage = 4;
+const Comics = observer(() => {
+  const { 
+    comics, 
+    currentPage, 
+    total, 
+    limit, 
+    loading, 
+    loadComics, 
+    setCurrentPage 
+  } = comicsStore;
 
-  const indexOfLastComic = currentPage * comicsPerPage;
-  const indexOfFirstComic = indexOfLastComic - comicsPerPage;
-  const currentComics = comics.slice(indexOfFirstComic, indexOfLastComic);
+  useEffect(() => {
+    loadComics(currentPage);
+  }, []);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    loadComics(newPage);
+    window.scrollTo(0, 0);
+  };
 
-  const totalPages = Math.ceil(comics.length / comicsPerPage);
-  const maxPagesToShow = 5;
-  let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-  let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+  const renderPagination = () => {
+    const pageCount = Math.ceil(total / limit);
+    const pagesToShow = 5;
 
-  if (endPage - startPage + 1 < maxPagesToShow) {
-    startPage = Math.max(1, endPage - maxPagesToShow + 1);
-  }
+    let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
+    let endPage = Math.min(pageCount, startPage + pagesToShow - 1);
 
-  const pageNumbers = [];
-  for (let i = startPage; i <= endPage; i++) {
-    pageNumbers.push(i);
-  }
+    if (endPage - startPage + 1 < pagesToShow) {
+      startPage = Math.max(1, endPage - pagesToShow + 1);
+    }
 
-  return (
-    <div className={styles.comics}>
-      <h1>Comics</h1>
-      <div className={styles.list}>
-        {currentComics.map((comic) => (
-          <ComicCard
-            key={comic.id}
-            comic={comic}
-            isFavorite={favorites.includes(comic.id)}
-            onToggleFavorite={toggleFavorite}
-          />
-        ))}
-      </div>
+    return (
       <div className={styles.pagination}>
         <button
-          onClick={() => paginate(1)}
+          onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
         >
-          Первая
+          « First
         </button>
         <button
-          onClick={() => paginate(currentPage - 1)}
+          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Назад
+          ‹ Prev
         </button>
-        {pageNumbers.map((number) => (
+        {Array.from({ length: endPage - startPage + 1 }).map((_, i) => (
           <button
-            key={number}
-            onClick={() => paginate(number)}
-            className={currentPage === number ? styles.active : ""} 
+            key={startPage + i}
+            onClick={() => handlePageChange(startPage + i)}
+            className={currentPage === startPage + i ? styles.active : ''}
           >
-            {number}
+            {startPage + i}
           </button>
         ))}
         <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages} 
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === pageCount}
         >
-          Вперед
+          Next ›
         </button>
         <button
-          onClick={() => paginate(totalPages)}
-          disabled={currentPage === totalPages} 
+          onClick={() => handlePageChange(pageCount)}
+          disabled={currentPage === pageCount}
         >
-          Последняя
+          Last »
         </button>
       </div>
+    );
+  };
+
+  return (
+    <div className={styles.comics}>
+      <h1>Marvel Comics</h1>
+      
+      {loading && !comics.length ? (
+        <div className={styles.loadingMessage}>Loading comics...</div>
+      ) : comics.length === 0 ? (
+        <div className={styles.emptyMessage}>No comics found</div>
+      ) : (
+        <>
+          <div className={styles.comicsGrid}>
+            {comics.map(comic => (
+              <div key={comic.id} className={styles.comicCardWrapper}>
+                <ComicCard comic={comic} />
+              </div>
+            ))}
+          </div>
+          
+          {total > limit && renderPagination()}
+        </>
+      )}
     </div>
   );
-};
+});
 
 export default Comics;
