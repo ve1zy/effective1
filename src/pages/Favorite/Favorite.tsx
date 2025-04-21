@@ -1,28 +1,41 @@
-import ComicCard from "../../components/ComicCard/ComicCard";
-import { comics } from "../../mocks/comics";
-import useFavorites from "../../hooks/useFavorites";
-import styles from "./Favorite.module.scss";
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import ComicCard from '../../components/ComicCard/ComicCard';
+import { comicsStore } from '../../stores/comicsStore';
+import { Comic } from '../../api/marvel';
+import styles from './Favorite.module.scss';
 
-const Favorite = () => {
-  const { favorites, toggleFavorite } = useFavorites();
+const Favorite = observer(() => {
+  const { favorites} = comicsStore;
 
-  const favoriteComics = comics.filter((comic) => favorites.includes(comic.id));
+  useEffect(() => {
+    comicsStore.loadFavorites();
+  }, []);
+
+  if (favorites.length === 0) {
+    return (
+      <div className={styles.favorite}>
+        <h1>Favorite Comics</h1>
+        <p>No favorites yet. Add some comics to your favorites!</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.favorite}>
-      <h1>Favorite</h1>
+      <h1>Favorite Comics</h1>
       <div className={styles.list}>
-        {favoriteComics.map((comic) => (
-          <ComicCard
+        {favorites.map((comic: Comic) => (
+          <ComicCard 
             key={comic.id}
             comic={comic}
-            isFavorite={true} 
-            onToggleFavorite={() => toggleFavorite(comic.id)} 
+            showFavoriteButton={true}
+            isFavorite={true}
           />
         ))}
       </div>
     </div>
   );
-};
+});
 
 export default Favorite;
