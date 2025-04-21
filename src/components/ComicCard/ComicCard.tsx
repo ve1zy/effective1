@@ -18,7 +18,15 @@ const ComicCard = observer(({
 }: ComicCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const { toggleFavorite } = comicsStore;
-
+  const getSafeImageUrl = (url: string) => {
+    // 1. Принудительно используем HTTPS
+    let safeUrl = url.replace('http://', 'https://');
+    
+    // 2. Добавляем временную метку для избежания кэширования
+    safeUrl += `?t=${new Date().getTime()}`;
+    
+    return safeUrl;
+  };
   // Используем переданное значение или получаем из store
   const isFavorite = isFavoriteProp ?? comicsStore.isFavorite(comic.id);
 
@@ -29,7 +37,7 @@ const ComicCard = observer(({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link to={`/comic/${comic.id}`} className={styles.link}>
-        <img src={comic.thumbnail} alt={comic.title} />
+        <img src={getSafeImageUrl(comic.thumbnail)} alt={comic.title} />
         <h3>{comic.title}</h3>
       </Link>
       {showFavoriteButton && isHovered && (
