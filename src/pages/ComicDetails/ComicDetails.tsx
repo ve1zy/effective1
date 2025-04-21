@@ -39,7 +39,13 @@ const ComicDetails = observer(() => {
       </div>
     );
   }
+  const getSafeImageUrl = (url: string) => {
+    let safeUrl = url.replace('http://', 'https://');
 
+    safeUrl += `?t=${new Date().getTime()}`;
+
+    return safeUrl;
+  };
   if (!currentComic) {
     return (
       <div className={styles.detailsContainer}>
@@ -67,7 +73,7 @@ const ComicDetails = observer(() => {
         <div className={styles.comicContent}>
           <div className={styles.comicImageContainer}>
             <img
-              src={currentComic.thumbnail}
+              src={getSafeImageUrl(currentComic.thumbnail)}
               alt={currentComic.title}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/placeholder-comic.jpg';
