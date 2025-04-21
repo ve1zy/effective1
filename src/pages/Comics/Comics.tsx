@@ -60,7 +60,7 @@ const Comics = observer(() => {
     return (
       <div className={styles.comics}>
         <h1>{t('comicsTitle')}</h1>
-        <div className={styles.loadingMessage}>{t('loading')}</div>
+        <div className={styles.loadingContainer}><div className={styles.loadingMessage}>{t('loading')}</div></div>
       </div>
     );
   }

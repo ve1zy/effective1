@@ -69,14 +69,29 @@
     height: 100%;
     min-height: 400px; 
   }
-  .loadingMessage,
-  .emptyMessage {
+  .loadingMessage, .emptyMessage {
     text-align: center;
     font-size: 1.2rem;
     margin: 3rem 0;
-    color: #6c757d;
+    color: var(--color-text-secondary);
+    background-color: var(--color-background); // Добавлено
+    height: 100vh; // Занимает весь экран
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
   }
-
+  .loadingContainer {
+    flex: 1;
+    background-color: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .comicsGrid {
+    background-color: var(--color-background); // Фон для сетки
+  }
   .loadingMore {
     text-align: center;
     padding: 1rem;
