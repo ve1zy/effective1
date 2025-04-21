@@ -1,5 +1,4 @@
 :root {
-    // Основные цвета
     --primary-color: #dc3545;
     --primary-hover: #c82333;
     --background-light: #f8f9fa;
@@ -16,8 +15,7 @@
     --shadow-dark: rgba(0, 0, 0, 0.3);
     --placeholder-light: #6c757d;
     --placeholder-dark: #888;
-  
-    // Текущие значения (по умолчанию светлая тема)
+
     --color-primary: var(--primary-color);
     --color-primary-hover: var(--primary-hover);
     --color-background: var(--background-light);
