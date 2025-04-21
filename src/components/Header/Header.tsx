@@ -7,14 +7,14 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <div className={styles.logo}>Marvel</div>
-      <nav>
+      <div className={styles.navContainer}><nav>
         <NavLink to="/comics">
           {t('comicsTitle')}
         </NavLink>
         <NavLink to="/favorite">
           {t('favoritesTitle')}
         </NavLink>
-      </nav>
+      </nav></div>
       <LanguageSwitcher />
     </header>
   );

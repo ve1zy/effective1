@@ -14,6 +14,8 @@ i18n
     resources: {
       en: {
         translation: {
+          "searchPlaceholder": "Search comics...",
+          "searchButton": "Search",
           "comicsTitle": "Marvel Comics",
           "favoriteComics": "Favorite Comics",
           "favoritesTitle": "Favorites",
@@ -34,6 +36,8 @@ i18n
       },
       ru: {
         translation: {
+          "searchPlaceholder": "Поиск комиксов...",
+          "searchButton": "Поиск",
           "comicsTitle": "Комиксы Marvel",
           "favoriteComics": "Избранные комиксы",
           "favoritesTitle": "Избранное",

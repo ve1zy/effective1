@@ -38,6 +38,33 @@ class ComicsStore {
       }
     );
   }
+  searchComics = async (query: string) => {
+    try {
+      runInAction(() => {
+        this.loading = true;
+        this.error = null;
+      });
+  
+      const response = await getComics(0, this.limit, {
+        titleStartsWith: query
+      });
+      
+      runInAction(() => {
+        this.comics = response.results;
+        this.total = response.total;
+        this.offset = 0;
+        this.hasMore = this.comics.length < response.total;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.error = err instanceof Error ? err.message : 'Failed to search comics';
+      });
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
+    }
+  };
   loadMoreComics = async () => {
     if (this.isLoadingMore || !this.hasMore) return;
     

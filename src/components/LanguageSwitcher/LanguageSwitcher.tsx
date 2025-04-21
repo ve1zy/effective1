@@ -1,26 +1,46 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import styles from './LanguageSwitcher.module.scss'; 
 
 const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const languages = [
+    { code: 'en', label: 'English' },
+    { code: 'ru', label: 'Русский' }
+  ];
+
+  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    setIsOpen(false);
   };
 
   return (
-    <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
+    <div className={styles.dropdown}>
       <button 
-        onClick={() => changeLanguage('en')}
-        style={{ fontWeight: i18n.language === 'en' ? 'bold' : 'normal' }}
+        className={styles.dropdownToggle}
+        onClick={() => setIsOpen(!isOpen)}
       >
-        EN
+        {currentLanguage.label}
+        <span className={styles.arrow}>{isOpen ? '↑' : '↓'}</span>
       </button>
-      <button 
-        onClick={() => changeLanguage('ru')}
-        style={{ fontWeight: i18n.language === 'ru' ? 'bold' : 'normal' }}
-      >
-        RU
-      </button>
+      
+      {isOpen && (
+        <div className={styles.dropdownMenu}>
+          {languages.map((language) => (
+            <button
+              key={language.code}
+              className={`${styles.menuItem} ${i18n.language === language.code ? styles.active : ''}`}
+              onClick={() => changeLanguage(language.code)}
+            >
+              {language.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

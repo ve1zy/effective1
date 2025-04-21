@@ -11,18 +11,64 @@
     color: #dc3545;
   }
 
+  .searchContainer {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+
+    input {
+      flex-grow: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+
+      &:focus {
+        outline: none;
+        border-color: #dc3545;
+      }
+    }
+
+    button {
+      padding: 0 1.5rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+
+      &:hover {
+        background-color: #c82333;
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+
   .comicsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 2rem;
-    justify-items: center;
+    width: 100%;
   }
-
+  
   .comicCardWrapper {
     width: 100%;
     height: 100%;
+    min-height: 400px; 
   }
-
   .loadingMessage,
   .emptyMessage {
     text-align: center;
