@@ -1,101 +1,68 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
+import { VirtuosoGrid } from 'react-virtuoso';
 import ComicCard from '../../components/ComicCard/ComicCard';
 import { comicsStore } from '../../stores/comicsStore';
 import styles from './Comics.module.scss';
-
+import { useTranslation } from 'react-i18next';
 const Comics = observer(() => {
+  const { t } = useTranslation();
   const { 
     comics, 
-    currentPage, 
-    total, 
-    limit, 
     loading, 
-    loadComics, 
-    setCurrentPage 
+    loadMoreComics, 
+    hasMore,
+    isLoadingMore,
+    resetComics
   } = comicsStore;
 
   useEffect(() => {
-    loadComics(currentPage);
+    resetComics();
+    loadMoreComics();
+    return () => resetComics();
   }, []);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    loadComics(newPage);
-    window.scrollTo(0, 0);
-  };
-
-  const renderPagination = () => {
-    const pageCount = Math.ceil(total / limit);
-    const pagesToShow = 5;
-
-    let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
-    let endPage = Math.min(pageCount, startPage + pagesToShow - 1);
-
-    if (endPage - startPage + 1 < pagesToShow) {
-      startPage = Math.max(1, endPage - pagesToShow + 1);
-    }
-
+  if (loading && !comics.length) {
     return (
-      <div className={styles.pagination}>
-        <button
-          onClick={() => handlePageChange(1)}
-          disabled={currentPage === 1}
-        >
-          « First
-        </button>
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          ‹ Prev
-        </button>
-        {Array.from({ length: endPage - startPage + 1 }).map((_, i) => (
-          <button
-            key={startPage + i}
-            onClick={() => handlePageChange(startPage + i)}
-            className={currentPage === startPage + i ? styles.active : ''}
-          >
-            {startPage + i}
-          </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === pageCount}
-        >
-          Next ›
-        </button>
-        <button
-          onClick={() => handlePageChange(pageCount)}
-          disabled={currentPage === pageCount}
-        >
-          Last »
-        </button>
+      <div className={styles.comics}>
+        <h1>{t('comicsTitle')}</h1>
+        <div className={styles.loadingMessage}>{t('loading')}</div>
       </div>
     );
-  };
+  }
+
+  if (comics.length === 0) {
+    return (
+      <div className={styles.comics}>
+        <h1>{t('comicsTitle')}</h1>
+        <div className={styles.emptyMessage}>{t('noComics')}</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.comics}>
-      <h1>Marvel Comics</h1>
+      <h1>{t('comicsTitle')}</h1>
       
-      {loading && !comics.length ? (
-        <div className={styles.loadingMessage}>Loading comics...</div>
-      ) : comics.length === 0 ? (
-        <div className={styles.emptyMessage}>No comics found</div>
-      ) : (
-        <>
-          <div className={styles.comicsGrid}>
-            {comics.map(comic => (
-              <div key={comic.id} className={styles.comicCardWrapper}>
-                <ComicCard comic={comic} />
+      <VirtuosoGrid
+        useWindowScroll
+        totalCount={hasMore ? comics.length + 1 : comics.length}
+        endReached={loadMoreComics}
+        overscan={200}
+        listClassName={styles.comicsGrid}
+        itemClassName={styles.comicCardWrapper}
+        itemContent={(index) => {
+          if (index >= comics.length) {
+            return (
+              <div className={styles.loadingMore}>
+                {isLoadingMore ? t('loading') : t('noMore')}
               </div>
-            ))}
-          </div>
+            );
+          }
           
-          {total > limit && renderPagination()}
-        </>
-      )}
+          return <ComicCard comic={comics[index]} />;
+        }}
+      />
     </div>
   );
 });

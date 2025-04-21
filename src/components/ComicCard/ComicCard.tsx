@@ -11,8 +11,8 @@ interface ComicCardProps {
   isFavorite?: boolean; // Переименовали isFavoriteDefault в isFavorite
 }
 
-const ComicCard = observer(({ 
-  comic, 
+const ComicCard = observer(({
+  comic,
   showFavoriteButton = true,
   isFavorite: isFavoriteProp
 }: ComicCardProps) => {
@@ -21,16 +21,23 @@ const ComicCard = observer(({
   const getSafeImageUrl = (url: string) => {
     // 1. Принудительно используем HTTPS
     let safeUrl = url.replace('http://', 'https://');
-    
+
     // 2. Добавляем временную метку для избежания кэширования
     safeUrl += `?t=${new Date().getTime()}`;
-    
+
     return safeUrl;
   };
   // Используем переданное значение или получаем из store
   const isFavorite = isFavoriteProp ?? comicsStore.isFavorite(comic.id);
 
   return (
+    <div className={styles.card} style={{ height: '400px' }}>
+    <div
+      className={styles.card}
+      style={{ height: '100%' }} // Добавляем фиксированную высоту
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
     <div
       className={styles.card}
       onMouseEnter={() => setIsHovered(true)}
@@ -48,6 +55,8 @@ const ComicCard = observer(({
           {isFavorite ? "❤️" : "♡"}
         </button>
       )}
+    </div>
+    </div>
     </div>
   );
 });

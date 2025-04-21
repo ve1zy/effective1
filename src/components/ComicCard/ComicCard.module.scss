@@ -5,7 +5,7 @@
   overflow: hidden;
   transition: all 0.3s ease;
   width: 100%;
-  height: 100%; 
+  height: 100%;
   display: flex;
   flex-direction: column;
 
@@ -28,13 +28,13 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    
+
     img {
       width: 100%;
       height: 300px;
       object-fit: cover;
       transition: transform 0.3s ease;
-      
+
       &:hover {
         transform: scale(1.05);
       }

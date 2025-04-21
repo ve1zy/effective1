@@ -4,10 +4,10 @@ import ComicCard from '../../components/ComicCard/ComicCard';
 import { comicsStore } from '../../stores/comicsStore';
 import { Comic } from '../../api/marvel';
 import styles from './Favorite.module.scss';
-
+import { useTranslation } from 'react-i18next';
 const Favorite = observer(() => {
   const { favorites} = comicsStore;
-
+  const { t } = useTranslation();
   useEffect(() => {
     comicsStore.loadFavorites();
   }, []);
@@ -15,15 +15,15 @@ const Favorite = observer(() => {
   if (favorites.length === 0) {
     return (
       <div className={styles.favorite}>
-        <h1>Favorite Comics</h1>
-        <p>No favorites yet. Add some comics to your favorites!</p>
+        <h1>{t('favoriteComics')}</h1>
+        <p>{t('noFavorites')}</p>
       </div>
     );
   }
 
   return (
     <div className={styles.favorite}>
-      <h1>Favorite Comics</h1>
+      <h1>{t('favoriteComics')}</h1>
       <div className={styles.list}>
         {favorites.map((comic: Comic) => (
           <ComicCard 
