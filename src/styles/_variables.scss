@@ -1,0 +1,46 @@
+:root {
+    // Основные цвета
+    --primary-color: #dc3545;
+    --primary-hover: #c82333;
+    --background-light: #f8f9fa;
+    --background-dark: #121212;
+    --card-bg-light: white;
+    --card-bg-dark: #1e1e1e;
+    --text-light: #333;
+    --text-dark: #f0f0f0;
+    --text-secondary-light: #555;
+    --text-secondary-dark: #b0b0b0;
+    --border-light: #eee;
+    --border-dark: #333;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-dark: rgba(0, 0, 0, 0.3);
+    --placeholder-light: #6c757d;
+    --placeholder-dark: #888;
+  
+    // Текущие значения (по умолчанию светлая тема)
+    --color-primary: var(--primary-color);
+    --color-primary-hover: var(--primary-hover);
+    --color-background: var(--background-light);
+    --color-card-bg: var(--card-bg-light);
+    --color-text: var(--text-light);
+    --color-text-secondary: var(--text-secondary-light);
+    --color-border: var(--border-light);
+    --color-shadow: var(--shadow-light);
+    --color-placeholder: var(--placeholder-light);
+    --color-header-bg: var(--primary-color);
+    --color-header-text: white;
+  }
+  
+  [data-theme="dark"] {
+    --color-primary: var(--primary-hover);
+    --color-primary-hover: var(--primary-color);
+    --color-background: var(--background-dark);
+    --color-card-bg: var(--card-bg-dark);
+    --color-text: var(--text-dark);
+    --color-text-secondary: var(--text-secondary-dark);
+    --color-border: var(--border-dark);
+    --color-shadow: var(--shadow-dark);
+    --color-placeholder: var(--placeholder-dark);
+    --color-header-bg: var(--card-bg-dark);
+    --color-header-text: var(--text-dark);
+  }
