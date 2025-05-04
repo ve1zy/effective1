@@ -1,0 +1,29 @@
+{
+    "short_name": "Marvel Comics",
+    "name": "Marvel Comics App",
+    "description": "Explore and manage your favorite Marvel comics.",
+    "icons": [
+      {
+        "src": "static/images/effective.jpg"
+      }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8f9fa",
+    "theme_color": "#dc3545",
+    "orientation": "portrait",
+    "scope": "/",
+    "categories": ["entertainment", "comics"],
+    "screenshots": [
+      {
+        "src": "screenshots/screenshot1.png",
+        "sizes": "640x1136",
+        "type": "image/png"
+      },
+      {
+        "src": "screenshots/screenshot2.png",
+        "sizes": "750x1334",
+        "type": "image/png"
+      }
+    ]
+  }
