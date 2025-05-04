@@ -7,13 +7,15 @@
   h1 {
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: #dc3545; 
+    color: var(--color-text); 
     font-family: 'Montserrat', sans-serif;
   }
 
   .list {
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
+    background-color: var(--color-background);
   }
-}
+} 

@@ -2,7 +2,7 @@
   padding: 2rem 1rem;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: calc(100vh - 200px);
+  min-height: 100vh;
 
   h1 {
     text-align: center;
@@ -11,58 +11,91 @@
     color: #dc3545;
   }
 
+  .searchContainer {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+
+    input {
+      flex-grow: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+
+      &:focus {
+        outline: none;
+        border-color: #dc3545;
+      }
+    }
+
+    button {
+      padding: 0 1.5rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+
+      &:hover {
+        background-color: #c82333;
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+
   .comicsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 2rem;
-    justify-items: center;
-    
-    .comicCardWrapper {
-      width: 100%;
-      height: 100%;
-    }
+    width: 100%;
   }
-
-  .pagination {
-    margin-top: 3rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.8rem;
-    flex-wrap: wrap;
-
-    button {
-      padding: 0.6rem 1.2rem;
-      border: 2px solid #dc3545;
-      border-radius: 6px;
-      background-color: white;
-      color: #dc3545;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 50px;
-
-      &:hover:not(:disabled) {
-        background-color: #dc3545;
-        color: white;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      &.active {
-        background-color: #dc3545;
-        color: white;
-      }
-    }
+  
+  .comicCardWrapper {
+    width: 100%;
+    height: 100%;
+    min-height: 400px; 
   }
-
-  .loadingMessage,
-  .emptyMessage {
+  .loadingMessage, .emptyMessage {
     text-align: center;
     font-size: 1.2rem;
     margin: 3rem 0;
+    color: var(--color-text-secondary);
+    background-color: var(--color-background); // Добавлено
+    height: 100vh; // Занимает весь экран
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .loadingContainer {
+    flex: 1;
+    background-color: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .comicsGrid {
+    background-color: var(--color-background); // Фон для сетки
+  }
+  .loadingMore {
+    text-align: center;
+    padding: 1rem;
     color: #6c757d;
+    grid-column: 1 / -1;
   }
 }

@@ -1,7 +1,12 @@
 .detailsContainer {
   max-width: 1200px;
+  background-color: var(--color-background);
   margin: 0 auto;
-  padding: 2rem 1rem;
+  min-height: 100vh;
+  padding: 1rem;
+  padding-bottom: 80px;
+  padding: 1rem;
+  padding-bottom: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,7 +88,13 @@
     margin-bottom: 2rem;
   }
 }
-
+.loading {
+  background-color: var(--color-background);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .relatedGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

@@ -2,7 +2,7 @@ import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { toast } from 'react-toastify';
 import { getComics, getComicById } from '../api/marvel';
 import { Comic } from '../api/marvel';
-
+import i18next from 'i18next';
 class ComicsStore {
   comics: Comic[] = [];
   currentComic: Comic | null = null;
@@ -14,6 +14,8 @@ class ComicsStore {
   loading = false;
   error: string | null = null;
   currentPage = 1;
+  hasMore = true;
+  isLoadingMore = false;
   constructor() {
     makeAutoObservable(this);
     this.initStore();
@@ -36,6 +38,61 @@ class ComicsStore {
       }
     );
   }
+  searchComics = async (query: string) => {
+    try {
+      runInAction(() => {
+        this.loading = true;
+        this.error = null;
+      });
+  
+      const response = await getComics(0, this.limit, {
+        titleStartsWith: query
+      });
+      
+      runInAction(() => {
+        this.comics = response.results;
+        this.total = response.total;
+        this.offset = 0;
+        this.hasMore = this.comics.length < response.total;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.error = err instanceof Error ? err.message : 'Failed to search comics';
+      });
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
+    }
+  };
+  loadMoreComics = async () => {
+    if (this.isLoadingMore || !this.hasMore) return;
+    
+    try {
+      runInAction(() => {
+        this.isLoadingMore = true;
+      });
+      
+      const response = await getComics(this.comics.length, this.limit);
+      
+      runInAction(() => {
+        this.comics = [...this.comics, ...response.results];
+        this.hasMore = this.comics.length < response.total;
+        this.isLoadingMore = false;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.error = err instanceof Error ? err.message : 'Failed to load more comics';
+        this.isLoadingMore = false;
+      });
+    }
+  };
+
+  resetComics = () => {
+    this.comics = [];
+    this.hasMore = true;
+    this.isLoadingMore = false;
+  };
   setCurrentPage = (page: number) => {
     this.currentPage = page;
   };
@@ -186,10 +243,10 @@ class ComicsStore {
     const exists = this.favorites.some(c => c.id === comic.id);
     if (exists) {
       this.favorites = this.favorites.filter(c => c.id !== comic.id);
-      toast.info('Removed from favorites');
+      toast.info(i18next.t('removeFavorite'));
     } else {
       this.favorites.push({ ...comic });
-      toast.success('Added to favorites');
+      toast.success(i18next.t('addFavorite'));
     }
   };
 

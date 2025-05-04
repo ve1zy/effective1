@@ -4,8 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ComicCard from '../../components/ComicCard/ComicCard';
 import { comicsStore } from '../../stores/comicsStore';
 import styles from './ComicDetails.module.scss';
-
+import { useTranslation } from 'react-i18next';
 const ComicDetails = observer(() => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { 
@@ -22,7 +23,7 @@ const ComicDetails = observer(() => {
   }, [id]);
 
   if (loading && !currentComic) {
-    return <div className={styles.detailsContainer}>Loading...</div>;
+    return <div className={styles.detailsContainer}>{t('loading')}</div>;
   }
 
   if (error) {
@@ -33,21 +34,27 @@ const ComicDetails = observer(() => {
           onClick={() => navigate('/comics')} 
           className={styles.backButton}
         >
-          Back to Comics
+          {t('backButton')}
         </button>
       </div>
     );
   }
+  const getSafeImageUrl = (url: string) => {
+    let safeUrl = url.replace('http://', 'https://');
 
+    safeUrl += `?t=${new Date().getTime()}`;
+
+    return safeUrl;
+  };
   if (!currentComic) {
     return (
       <div className={styles.detailsContainer}>
-        <h2>Comic not found</h2>
+        <h2>{t('noComics')}</h2>
         <button 
           onClick={() => navigate('/comics')} 
           className={styles.backButton}
         >
-          Back to Comics
+          {t('backButton')}
         </button>
       </div>
     );
@@ -59,14 +66,14 @@ const ComicDetails = observer(() => {
         <div className={styles.comicHeader}>
           <h1>{currentComic.title}</h1>
           {currentComic.issueNumber && (
-            <p className={styles.issueNumber}>Issue #{currentComic.issueNumber}</p>
+            <p className={styles.issueNumber}>{t('issueNumber', { number: currentComic.issueNumber })}</p>
           )}
         </div>
 
         <div className={styles.comicContent}>
           <div className={styles.comicImageContainer}>
             <img
-              src={currentComic.thumbnail}
+              src={getSafeImageUrl(currentComic.thumbnail)}
               alt={currentComic.title}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/placeholder-comic.jpg';
@@ -75,14 +82,14 @@ const ComicDetails = observer(() => {
           </div>
 
           <div className={styles.comicDescription}>
-            <h2>Description</h2>
-            <p>{currentComic.description || "No description available"}</p>
+            <h2>{t('description')}</h2>
+            <p>{currentComic.description || t('noDescription')}</p>
           </div>
         </div>
       </div>
 
       <div className={styles.relatedSection}>
-        <h2>You Might Also Like</h2>
+        <h2>{t('relatedComics')}</h2>
         {relatedComics.length > 0 ? (
           <div className={styles.relatedGrid}>
             {relatedComics.map(comic => (
@@ -90,7 +97,7 @@ const ComicDetails = observer(() => {
             ))}
           </div>
         ) : (
-          !loading && <p className={styles.noRelated}>No related comics found</p>
+          !loading && <p className={styles.noRelated}>{t('noRelated')}</p>
         )}
       </div>
 
@@ -98,7 +105,7 @@ const ComicDetails = observer(() => {
         onClick={() => navigate('/comics')} 
         className={styles.backButton}
       >
-        Back to Comics
+        {t('backButton')}
       </button>
     </div>
   );
