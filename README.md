@@ -9,27 +9,27 @@
 ## Запуск приложения
 
 1. **Установка зависимостей**:
-   
-   (npm install)
-   
+   ```bash
+   npm install
+   ```
 
 2. **Настройка окружения**:
    - Создайте файл `.env` в корне проекта.
    - Добавьте в него следующие переменные окружения:
-     
+     ```env
      VITE_MARVEL_PUBLIC_KEY=your_public_key
      VITE_MARVEL_PRIVATE_KEY=your_private_key
-     
+     ```
 
 3. **Запуск в режиме разработки**:
-   
-   (npm run dev)
-   
+   ```bash
+   npm run dev
+   ```
 
 4. **Сборка для production**:
-   
-   (npm run build)
-   
+   ```bash
+   npm run build
+   ```
 
 ---
 
