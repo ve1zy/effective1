@@ -44,10 +44,10 @@ class ComicsStore {
       runInAction(() => {
         this.loading = true;
         this.error = null;
-        this.searchQuery = query; // Сохраняем поисковый запрос
-        this.comics = []; // Очищаем текущие комиксы
-        this.offset = 0; // Сбрасываем офсет
-        this.hasMore = true; // Разрешаем загрузку дополнительных страниц
+        this.searchQuery = query;
+        this.comics = [];
+        this.offset = 0;
+        this.hasMore = true;
       });
   
       const response = await getComics(0, this.limit, {
@@ -80,7 +80,7 @@ class ComicsStore {
   
       const additionalParams: Record<string, any> = {};
       if (this.searchQuery) {
-        additionalParams.titleStartsWith = this.searchQuery; // Добавляем поисковый запрос
+        additionalParams.titleStartsWith = this.searchQuery;
       }
   
       const response = await getComics(this.comics.length, this.limit, additionalParams);
@@ -100,7 +100,7 @@ class ComicsStore {
 
   resetComics = () => {
     this.comics = [];
-    this.searchQuery = null; // Сбрасываем поисковый запрос
+    this.searchQuery = null;
     this.hasMore = true;
     this.isLoadingMore = false;
   };

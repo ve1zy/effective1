@@ -28,8 +28,8 @@ const ComicCard = observer(({
 
   return (
     <div className={`${styles.card} ${isHovered ? 'show-favorite-button' : ''}`}
-    onMouseEnter={() => setIsHovered(true)} // Показать кнопку при наведении
-    onMouseLeave={() => setIsHovered(false)} // Скрыть кнопку при уходе курсора
+    onMouseEnter={() => setIsHovered(true)}
+    onMouseLeave={() => setIsHovered(false)}
     onTouchStart={() => setIsHovered(!isHovered)}>
       <Link to={`/comic/${comic.id}`} className={styles.link}>
         <div className={styles.imageWrapper}>
