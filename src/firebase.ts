@@ -37,24 +37,6 @@ export const listenForMessages = () => {
           body: payload.notification.body || "No additional information",
         });
       }
-
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.addEventListener("notificationclick", (event) => {
-            const notification = event.notification;
-            const action = event.action;
-
-            notification.close();
-
-            const data = notification.data;
-
-            if (data && data.url) {
-              console.log("[Service Worker] Redirecting to:", data.url);
-              window.location.href = data.url;
-            }
-          });
-        });
-      }
     }
   });
 };
