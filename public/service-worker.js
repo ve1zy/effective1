@@ -110,19 +110,3 @@ self.addEventListener("notificationclick", (event) => {
     clients.openWindow(data?.url || "/")
   );
 });
-navigator.serviceWorker.ready.then((registration) => {
-  registration.addEventListener("notificationclick", (event) => {
-    console.log("[Service Worker] Notification clicked:", event);
-    const notification = event.notification;
-    const action = event.action;
-
-    notification.close();
-
-    const data = notification.data;
-
-    if (data && data.url) {
-      console.log("[Service Worker] Redirecting to:", data.url);
-      window.location.href = data.url;
-    }
-  });
-});
