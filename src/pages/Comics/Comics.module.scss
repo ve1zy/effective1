@@ -3,7 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
-
+  padding-bottom: 90px;
   h1 {
     text-align: center;
     font-size: 2.5rem;
@@ -74,8 +74,8 @@
     font-size: 1.2rem;
     margin: 3rem 0;
     color: var(--color-text-secondary);
-    background-color: var(--color-background); // Добавлено
-    height: 100vh; // Занимает весь экран
+    background-color: var(--color-background);
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,7 +90,7 @@
   }
   
   .comicsGrid {
-    background-color: var(--color-background); // Фон для сетки
+    background-color: var(--color-background);
   }
   .loadingMore {
     text-align: center;

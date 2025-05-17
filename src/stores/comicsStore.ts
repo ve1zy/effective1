@@ -5,6 +5,7 @@ import { Comic } from '../api/marvel';
 import i18next from 'i18next';
 class ComicsStore {
   comics: Comic[] = [];
+  searchQuery: string | null = null;
   currentComic: Comic | null = null;
   relatedComics: Comic[] = [];
   favorites: Comic[] = [];
@@ -43,12 +44,16 @@ class ComicsStore {
       runInAction(() => {
         this.loading = true;
         this.error = null;
+        this.searchQuery = query;
+        this.comics = [];
+        this.offset = 0;
+        this.hasMore = true;
       });
   
       const response = await getComics(0, this.limit, {
-        titleStartsWith: query
+        titleStartsWith: query,
       });
-      
+  
       runInAction(() => {
         this.comics = response.results;
         this.total = response.total;
@@ -67,14 +72,19 @@ class ComicsStore {
   };
   loadMoreComics = async () => {
     if (this.isLoadingMore || !this.hasMore) return;
-    
+  
     try {
       runInAction(() => {
         this.isLoadingMore = true;
       });
-      
-      const response = await getComics(this.comics.length, this.limit);
-      
+  
+      const additionalParams: Record<string, any> = {};
+      if (this.searchQuery) {
+        additionalParams.titleStartsWith = this.searchQuery;
+      }
+  
+      const response = await getComics(this.comics.length, this.limit, additionalParams);
+  
       runInAction(() => {
         this.comics = [...this.comics, ...response.results];
         this.hasMore = this.comics.length < response.total;
@@ -90,6 +100,7 @@ class ComicsStore {
 
   resetComics = () => {
     this.comics = [];
+    this.searchQuery = null;
     this.hasMore = true;
     this.isLoadingMore = false;
   };

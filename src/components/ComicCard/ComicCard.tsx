@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { comicsStore } from '../../stores/comicsStore';
 import { Comic } from '../../api/marvel';
 import styles from './ComicCard.module.scss';
-
+import { useState } from 'react';
 interface ComicCardProps {
   comic: Comic;
   showFavoriteButton?: boolean;
@@ -16,6 +16,7 @@ const ComicCard = observer(({
   isFavorite: isFavoriteProp
 }: ComicCardProps) => {
   const { toggleFavorite } = comicsStore;
+  const [isHovered, setIsHovered] = useState(false);
   const getSafeImageUrl = (url: string) => {
     let safeUrl = url.replace('http://', 'https://');
 
@@ -26,7 +27,10 @@ const ComicCard = observer(({
   const isFavorite = isFavoriteProp ?? comicsStore.isFavorite(comic.id);
 
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${isHovered ? 'show-favorite-button' : ''}`}
+    onMouseEnter={() => setIsHovered(true)}
+    onMouseLeave={() => setIsHovered(false)}
+    onTouchStart={() => setIsHovered(!isHovered)}>
       <Link to={`/comic/${comic.id}`} className={styles.link}>
         <div className={styles.imageWrapper}>
           <img 

@@ -81,10 +81,20 @@
     color: var(--color-primary);
     z-index: 1;
     transition: all 0.3s ease;
-
+    opacity: 0;
+    visibility: hidden;
     &:hover {
       background: white;
       transform: scale(1.1);
     }
+  }
+  &:hover .favoriteButton {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &.show-favorite-button .favoriteButton {
+    opacity: 1;
+    visibility: visible;
   }
 }
