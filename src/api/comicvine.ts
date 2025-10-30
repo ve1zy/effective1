@@ -16,7 +16,9 @@ function processDescription(description: string): string {
 }
 
 const apiKey = import.meta.env.VITE_COMICVINE_API_KEY || '';
-const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+const baseUrl = process.env.NODE_ENV === 'production'
+  ? 'https://your-backend.vercel.app/api'
+  : import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Добавляем проверку на наличие API ключа в клиентском коде
 if (!apiKey) {
