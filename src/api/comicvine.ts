@@ -52,11 +52,12 @@ export interface ComicsResponse {
 const api = axios.create({
   baseURL: baseUrl,
   headers: {
-    'Accept': 'application/json',
+    'Accept': 'application/json, text/plain, */*',
   },
   // Отключаем автоматические редиректы
   maxRedirects: 0,
-  validateStatus: (status) => status >= 200 && status < 300 || status === 302
+  validateStatus: (status) => status >= 200 && status < 300 || status === 302,
+  timeout: 15000 // Добавляем таймаут 15 секунд
 });
 
 // Логируем каждый запрос для отладки
@@ -79,6 +80,23 @@ api.interceptors.response.use(
       console.error('Received HTML response instead of JSON:', response.data);
       throw new Error('Received HTML response instead of JSON');
     }
+    
+    // Дополнительная проверка: убедимся, что тело ответа - это JSON объект
+    if (response.data && typeof response.data === 'string') {
+      try {
+        // Пробуем парсить строку как JSON
+        response.data = JSON.parse(response.data);
+      } catch (e) {
+        console.error('Response data is string but not valid JSON:', response.data);
+        throw new Error('Invalid JSON response');
+      }
+    }
+    
+    // Проверяем, что response.data имеет структуру ComicVine API
+    if (response.data && typeof response.data === 'object' && response.data.hasOwnProperty('error')) {
+      // Это валидный ответ ComicVine API
+    }
+    
     return response;
   },
   (error) => {
@@ -132,6 +150,7 @@ export const getComics = async (
     }
   }
 
+  console.log('Making request to endpoint:', endpoint, 'with params:', searchParams);
   const response = await api.get<ComicVineResponse<any>>(endpoint, { params: searchParams });
   
   console.log('Raw API Response:', response.data);
@@ -185,7 +204,9 @@ export const getComicById = async (id: number): Promise<Comic> => {
 
   console.log('Making single comic API request for ID:', id, 'with params:', params);
   
-  const response = await api.get<ComicVineResponse<any>>(`/vine/issue/4000-${id}/`, { params });
+  const endpoint = `/vine/issue/4000-${id}/`;
+  console.log('Making request to endpoint:', endpoint, 'with params:', params);
+  const response = await api.get<ComicVineResponse<any>>(endpoint, { params });
 
   console.log('Single comic raw response:', response.data);
 
