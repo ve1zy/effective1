@@ -7,12 +7,11 @@ export default async function handler(request: VercelRequest, response: VercelRe
   const pathString = Array.isArray(path) ? path.join('/') : path;
   
   // Формируем полный URL для Comic Vine API
- // Формируем полный URL для Comic Vine API
- const comicVineUrl = `https://comicvine.gamespot.com/api/${pathString}`;
- 
- console.log('Proxy request to:', comicVineUrl);
- console.log('Request query params:', request.query);
- console.log('Environment API key exists:', !!process.env.VITE_COMICVINE_API_KEY);
+  const comicVineUrl = `https://comicvine.gamespot.com/api/${pathString}`;
+  
+  console.log('Proxy request to:', comicVineUrl);
+  console.log('Request query params:', request.query);
+  console.log('Environment API key exists:', !!process.env.VITE_COMICVINE_API_KEY);
   
   // Получаем API ключ из environment переменной
   const apiKey = process.env.VITE_COMICVINE_API_KEY || process.env.COMICVINE_API_KEY;
@@ -23,14 +22,10 @@ export default async function handler(request: VercelRequest, response: VercelRe
       VITE_COMICVINE_API_KEY: process.env.VITE_COMICVINE_API_KEY,
       COMICVINE_API_KEY: process.env.COMICVINE_API_KEY
     });
-    return response.status(500).json({
+    return response.status(500).json({ 
       error: 'API key is not configured properly',
       available_envs: Object.keys(process.env).filter(key => key.includes('COMICVINE'))
     });
-  }
-  
-  if (!apiKey) {
-    return response.status(500).json({ error: 'API key is not configured' });
   }
   
   try {
@@ -53,6 +48,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     response.status(200).json(result.data);
   } catch (error: any) {
     console.error('Proxy error:', error.message);
-    response.status(500).json({ error: 'Failed to fetch data from Comic Vine API' });
+    console.error('Error details:', error);
+    response.status(500).json({ error: 'Failed to fetch data from Comic Vine API', details: error.message });
   }
 }
