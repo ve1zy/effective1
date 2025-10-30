@@ -18,7 +18,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
    const pathString = Array.isArray(path) ? path.join('/') : path;
    
    // Формируем полный URL для Comic Vine API
-   const comicVineUrl = `https://comicvine.gamespot.com/api/${pathString}`;
+   const comicVineUrl = `https://comicvine.gamespot.com/api/${pathString}/`;
    
    console.log('Proxy request to:', comicVineUrl);
    console.log('Request query params:', request.query);
@@ -55,7 +55,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
          'Connection': 'keep-alive',
          'Referer': 'https://comicvine.gamespot.com/'
        },
-       timeout: 10000, // Увеличиваем таймаут до 10 секунд
+       timeout: 15000, // Увеличиваем таймаут до 15 секунд
        validateStatus: (status) => status < 500 // Допускаем ошибки сервера как ответы, чтобы обработать их
      });
      
