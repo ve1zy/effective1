@@ -18,6 +18,11 @@ function processDescription(description: string): string {
 const apiKey = import.meta.env.VITE_COMICVINE_API_KEY;
 const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
+// Добавляем проверку на наличие API ключа в клиентском коде
+if (!apiKey) {
+  console.error('VITE_COMICVINE_API_KEY is not set in client environment');
+}
+
 export interface Comic {
   id: number;
   title: string;
