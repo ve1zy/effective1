@@ -10,7 +10,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
  const comicVineUrl = `https://comicvine.gamespot.com/api/${pathString}`;
   
   // Получаем API ключ из environment переменной
-  const apiKey = process.env.COMICVINE_API_KEY;
+  const apiKey = process.env.VITE_COMICVINE_API_KEY || process.env.COMICVINE_API_KEY;
   
   // В целях отладки, если переменная не найдена, возвращаем ошибку с описанием
   if (!apiKey) {
