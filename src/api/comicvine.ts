@@ -70,6 +70,22 @@ api.interceptors.request.use(
   }
 );
 
+// Проверяем ответ перед обработкой
+api.interceptors.response.use(
+  (response) => {
+    // Проверяем, является ли ответ HTML вместо JSON
+    const contentType = response.headers['content-type'];
+    if (contentType && contentType.includes('text/html')) {
+      console.error('Received HTML response instead of JSON:', response.data);
+      throw new Error('Received HTML response instead of JSON');
+    }
+    return response;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 api.interceptors.response.use(
   (response: AxiosResponse<ComicVineResponse<any>>) => {
     console.log('Full API Response:', response);
