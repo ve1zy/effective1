@@ -2,16 +2,20 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
-   // Устанавливаем CORS заголовки
-   response.setHeader('Access-Control-Allow-Credentials', 'true');
-   response.setHeader('Access-Control-Allow-Origin', '*');
-   response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-   response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
-   
    // Обработка preflight запросов
    if (request.method === 'OPTIONS') {
+     response.setHeader('Access-Control-Allow-Credentials', 'true');
+     response.setHeader('Access-Control-Allow-Origin', 'https://effective1.vercel.app');
+     response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,POST,PUT,DELETE');
+     response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Authorization');
      return response.status(200).end();
    }
+   
+   // Устанавливаем CORS заголовки для обычных запросов
+   response.setHeader('Access-Control-Allow-Credentials', 'true');
+   response.setHeader('Access-Control-Allow-Origin', 'https://effective1.vercel.app');
+   response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,POST,PUT,DELETE');
+   response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Authorization');
    
    // Получаем путь из URL параметров
    const path = request.query.path;
