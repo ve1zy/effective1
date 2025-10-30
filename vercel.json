@@ -1,7 +1,13 @@
 {
-  "rewrites": [
-    { "source": "/service-worker.js", "destination": "/service-worker.js" },
-    { "source": "/(.*)", "destination": "/" }
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ],
   "headers": [
     {
