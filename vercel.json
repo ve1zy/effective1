@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/vine/:path*", "destination": "/api/vine/:path*" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/service-worker.js", "destination": "/service-worker.js" },
     { "source": "/(.*)", "destination": "/" }
   ],

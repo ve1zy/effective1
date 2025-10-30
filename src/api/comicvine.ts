@@ -52,7 +52,10 @@ const api = axios.create({
   baseURL: baseUrl,
   headers: {
     'Accept': 'application/json',
-  }
+  },
+  // Добавляем обработку ошибок редиректа
+  maxRedirects: 0,
+  validateStatus: (status) => status >= 200 && status < 300 || status === 302
 });
 
 api.interceptors.response.use(
