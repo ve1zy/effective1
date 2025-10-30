@@ -16,7 +16,7 @@ i18n
         translation: {
           "searchPlaceholder": "Search comics...",
           "searchButton": "Search",
-          "comicsTitle": "Marvel Comics",
+          "comicsTitle": "Comic Vine Comics",
           "favoriteComics": "Favorite Comics",
           "favoritesTitle": "Favorites",
           "noFavorites": "No favorites yet. Add some comics to your favorites!",
@@ -38,7 +38,7 @@ i18n
         translation: {
           "searchPlaceholder": "Поиск комиксов...",
           "searchButton": "Поиск",
-          "comicsTitle": "Комиксы Marvel",
+          "comicsTitle": "Комиксы Comic Vine",
           "favoriteComics": "Избранные комиксы",
           "favoritesTitle": "Избранное",
           "noFavorites": "Пока нет избранного. Добавьте комиксы в избранное!",

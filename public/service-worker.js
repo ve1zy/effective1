@@ -1,4 +1,4 @@
-const CACHE_NAME = "marvel-comics-v1";
+const CACHE_NAME = "comicvine-comics-v1";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
@@ -43,7 +43,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating...");
+ console.log("[Service Worker] Activating...");
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -67,23 +67,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.origin === "https://gateway.marvel.com ") {
-    event.respondWith(
-      caches.match(url.pathname).then((cachedResponse) => {
-        if (cachedResponse) {
-          console.log(`[Service Worker] Serving from cache: ${url.pathname}`);
-          return cachedResponse;
-        }
-
-        return fetch(request).then((response) => {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(url.pathname, responseToCache);
-          });
-          return response;
-        });
-      })
-    );
+  if (url.origin === "https://comicvine.gamespot.com") {
+    return;
   } else {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
@@ -104,9 +89,9 @@ self.addEventListener("fetch", (event) => {
 });
 self.addEventListener("notificationclick", (event) => {
   const data = event.notification?.data;
-  console.log("[Service Worker] Notification clicked:", data);
+ console.log("[Service Worker] Notification clicked:", data);
 
   event.waitUntil(
     clients.openWindow(data?.url || "/")
-  );
+ );
 });

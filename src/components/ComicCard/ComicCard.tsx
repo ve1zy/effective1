@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import { comicsStore } from '../../stores/comicsStore';
-import { Comic } from '../../api/marvel';
+import { Comic } from '../../api/comicvine';
 import styles from './ComicCard.module.scss';
 import { useState } from 'react';
 interface ComicCardProps {

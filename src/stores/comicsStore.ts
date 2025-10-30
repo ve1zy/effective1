@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { toast } from 'react-toastify';
-import { getComics, getComicById } from '../api/marvel';
-import { Comic } from '../api/marvel';
+import { getComics, getComicById } from '../api/comicvine';
+import { Comic } from '../api/comicvine';
 import i18next from 'i18next';
 class ComicsStore {
   comics: Comic[] = [];
@@ -31,7 +31,7 @@ class ComicsStore {
             title: c.title,
             thumbnail: c.thumbnail
           })));
-          localStorage.setItem('marvel_favorites', data);
+          localStorage.setItem('comicvine_favorites', data);
           console.log('Saved favorites:', data);
         } catch (error) {
           console.error('Save error:', error);
@@ -177,33 +177,39 @@ class ComicsStore {
         this.loading = true;
         this.relatedComics = [];
       });
-  
-      if (comic.series) {
-        const seriesId = comic.series.resourceURI.split('/').pop();
-        const seriesResponse = await getComics(0, 20, {
-          series: seriesId,
-          orderBy: '-modified',
-          limit: 8
-        });
-  
-        const seriesComics = seriesResponse.results.filter(c => c.id !== comic.id);
-        
-        if (seriesComics.length > 0) {
-          runInAction(() => {
-            this.relatedComics = seriesComics.slice(0, 4);
+
+      // Попробуем найти комиксы из той же серии
+      if (comic.series && comic.series.resourceURI) {
+        // Извлекаем ID серии из resourceURI, предполагая формат: .../4050-{id}/
+        const match = comic.series.resourceURI.match(/\/(\d+)-(\d+)\//);
+        if (match) {
+          const seriesId = match[2]; // Берем второй захватываемый элемент (ID серии)
+          const seriesResponse = await getComics(0, 20, {
+            filter: `series:${seriesId}`,
+            field_list: 'id,name,deck,image,issue_number,cover_date,description',
+            limit: 8
           });
-          return;
+          
+          const seriesComics = seriesResponse.results.filter(c => c.id !== comic.id);
+          
+          if (seriesComics.length > 0) {
+            runInAction(() => {
+              this.relatedComics = seriesComics.slice(0, 4);
+            });
+            return;
+          }
         }
       }
-  
+      
+      // Если не удалось найти по серии, ищем по названию
       const baseTitle = comic.title.replace(/#\d+.*/, '').trim();
       if (baseTitle) {
         const titleResponse = await getComics(0, 20, {
           titleStartsWith: baseTitle,
-          orderBy: '-modified',
+          field_list: 'id,name,deck,image,issue_number,cover_date,description',
           limit: 10
         });
-  
+        
         const titleComics = titleResponse.results.filter(c => c.id !== comic.id);
         
         if (titleComics.length > 0) {
@@ -213,18 +219,19 @@ class ComicsStore {
           return;
         }
       }
-  
+      
+      // Если не удалось найти по названию, получаем случайные комиксы
       const randomResponse = await getComics(Math.floor(Math.random() * 100), 4, {
-        orderBy: '-modified',
+        field_list: 'id,name,deck,image,issue_number,cover_date,description',
         limit: 4
       });
-  
+      
       runInAction(() => {
         this.relatedComics = randomResponse.results
           .filter(c => c.id !== comic.id)
           .slice(0, 4);
       });
-  
+
     } catch (err) {
       console.error('Failed to load related comics:', err);
       runInAction(() => {
@@ -240,7 +247,7 @@ class ComicsStore {
 
   loadFavorites = () => {
     try {
-      const data = localStorage.getItem('marvel_favorites');
+      const data = localStorage.getItem('comicvine_favorites');
       if (data) {
         this.favorites = JSON.parse(data);
         console.log('Loaded favorites:', this.favorites);

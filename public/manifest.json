@@ -1,7 +1,7 @@
 {
-    "short_name": "Marvel Comics",
-    "name": "Marvel Comics App",
-    "description": "Explore and manage your favorite Marvel comics.",
+    "short_name": "Comic Vine Comics",
+    "name": "Comic Vine Comics App",
+    "description": "Explore and manage your favorite Comic Vine comics.",
     "icons": [
       {
         "src": "static/images/effective.jpg"
