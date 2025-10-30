@@ -48,15 +48,27 @@ export interface ComicsResponse {
   total: number;
 }
 
+// Создаем отдельный экземпляр axios для прокси-запросов
 const api = axios.create({
   baseURL: baseUrl,
   headers: {
     'Accept': 'application/json',
   },
-  // Добавляем обработку ошибок редиректа
+  // Отключаем автоматические редиректы
   maxRedirects: 0,
   validateStatus: (status) => status >= 200 && status < 300 || status === 302
 });
+
+// Логируем каждый запрос для отладки
+api.interceptors.request.use(
+  (config) => {
+    console.log('Making API request to:', (config.baseURL || '') + (config.url || ''), 'with params:', config.params);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 api.interceptors.response.use(
   (response: AxiosResponse<ComicVineResponse<any>>) => {

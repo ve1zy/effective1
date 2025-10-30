@@ -7,7 +7,12 @@ export default async function handler(request: VercelRequest, response: VercelRe
   const pathString = Array.isArray(path) ? path.join('/') : path;
   
   // Формируем полный URL для Comic Vine API
+ // Формируем полный URL для Comic Vine API
  const comicVineUrl = `https://comicvine.gamespot.com/api/${pathString}`;
+ 
+ console.log('Proxy request to:', comicVineUrl);
+ console.log('Request query params:', request.query);
+ console.log('Environment API key exists:', !!process.env.VITE_COMICVINE_API_KEY);
   
   // Получаем API ключ из environment переменной
   const apiKey = process.env.VITE_COMICVINE_API_KEY || process.env.COMICVINE_API_KEY;
