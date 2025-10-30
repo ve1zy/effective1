@@ -16,7 +16,7 @@ function processDescription(description: string): string {
 }
 
 const apiKey = import.meta.env.VITE_COMICVINE_API_KEY;
-const baseUrl = '/api/vine';
+const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
 export interface Comic {
   id: number;
@@ -82,11 +82,11 @@ export const getComics = async (
   
   console.log('Making API request with params:', params);
 
-  let endpoint = '/issues/';
+  let endpoint = '/vine/issues/';
   const searchParams = { ...params };
   
   if (additionalParams.name || additionalParams.titleStartsWith) {
-    endpoint = '/search/';
+    endpoint = '/vine/search/';
     searchParams.resources = 'issue';
     if (additionalParams.titleStartsWith) {
       searchParams.query = additionalParams.titleStartsWith;
@@ -149,7 +149,7 @@ export const getComicById = async (id: number): Promise<Comic> => {
 
   console.log('Making single comic API request for ID:', id, 'with params:', params);
   
-  const response = await api.get<ComicVineResponse<any>>(`/issue/4000-${id}/`, { params });
+  const response = await api.get<ComicVineResponse<any>>(`/vine/issue/4000-${id}/`, { params });
 
   console.log('Single comic raw response:', response.data);
 
