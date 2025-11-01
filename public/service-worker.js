@@ -78,8 +78,8 @@ self.addEventListener("fetch", (event) => {
           return cachedResponse;
         }
         return fetch(request).then((response) => {
-          // Проверяем, что ответ можно клонировать и кэшировать
-          if (response.status === 200 && response.type === 'basic') {
+          // Кэшируем только локальные ресурсы, а не внешние изображения
+          if (request.url.startsWith(self.location.origin) && response.status === 200 && response.type === 'basic') {
             const responseToCache = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, responseToCache);
