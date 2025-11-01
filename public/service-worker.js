@@ -67,8 +67,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Пропускаем кэширование API-запросов к Superhero API
-  if (url.pathname.startsWith('/api/superhero')) {
+  // Пропускаем кэширование для внешних ресурсов, API-запросов и изображений с других доменов
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/superhero')) {
     event.respondWith(fetch(request));
   } else {
     event.respondWith(

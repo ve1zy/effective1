@@ -41,11 +41,14 @@ const ComicDetails = observer(() => {
   }
   const getSafeImageUrl = (url: string) => {
     let safeUrl = url.replace('http://', 'https://');
-
-    safeUrl += `?t=${new Date().getTime()}`;
+    
+    // Не добавляем временный параметр к URL с superherodb.com, чтобы избежать ошибок CORS
+    if (!safeUrl.includes('superherodb.com')) {
+      safeUrl += `?t=${new Date().getTime()}`;
+    }
 
     return safeUrl;
- };
+  };
   if (!currentComic) {
     return (
       <div className={styles.detailsContainer}>
