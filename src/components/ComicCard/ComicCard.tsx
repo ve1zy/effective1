@@ -1,22 +1,24 @@
 import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import { comicsStore } from '../../stores/comicsStore';
-import { Comic } from '../../api/marvel';
+import { Superhero } from '../../api/superhero';
 import styles from './ComicCard.module.scss';
 import { useState } from 'react';
+
 interface ComicCardProps {
-  comic: Comic;
+  comic: Superhero;
   showFavoriteButton?: boolean;
-  isFavorite?: boolean; 
+  isFavorite?: boolean;
 }
 
 const ComicCard = observer(({
   comic,
   showFavoriteButton = true,
-  isFavorite: isFavoriteProp
+ isFavorite: isFavoriteProp
 }: ComicCardProps) => {
   const { toggleFavorite } = comicsStore;
   const [isHovered, setIsHovered] = useState(false);
+  
   const getSafeImageUrl = (url: string) => {
     let safeUrl = url.replace('http://', 'https://');
 
@@ -24,6 +26,7 @@ const ComicCard = observer(({
 
     return safeUrl;
   };
+  
   const isFavorite = isFavoriteProp ?? comicsStore.isFavorite(comic.id);
 
   return (
@@ -33,16 +36,20 @@ const ComicCard = observer(({
     onTouchStart={() => setIsHovered(!isHovered)}>
       <Link to={`/comic/${comic.id}`} className={styles.link}>
         <div className={styles.imageWrapper}>
-          <img 
-            src={getSafeImageUrl(comic.thumbnail)} 
-            alt={comic.title}
+          <img
+            src={getSafeImageUrl(
+              (comic.image && typeof comic.image === 'object' && 'url' in comic.image && comic.image.url)
+              || (comic as any)['image']
+              || '/placeholder-comic.jpg'
+            )}
+            alt={comic.name}
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/placeholder-comic.jpg';
             }}
           />
         </div>
         <div className={styles.titleContainer}>
-          <h3 className={styles.title}>{comic.title}</h3>
+          <h3 className={styles.title}>{comic.name}</h3>
         </div>
       </Link>
       {showFavoriteButton && (

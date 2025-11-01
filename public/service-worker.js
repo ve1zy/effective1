@@ -1,4 +1,4 @@
-const CACHE_NAME = "marvel-comics-v1";
+const CACHE_NAME = "superhero-comics-v1";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
@@ -67,23 +67,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.origin === "https://gateway.marvel.com ") {
-    event.respondWith(
-      caches.match(url.pathname).then((cachedResponse) => {
-        if (cachedResponse) {
-          console.log(`[Service Worker] Serving from cache: ${url.pathname}`);
-          return cachedResponse;
-        }
-
-        return fetch(request).then((response) => {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(url.pathname, responseToCache);
-          });
-          return response;
-        });
-      })
-    );
+  // Пропускаем кэширование API-запросов к Superhero API
+  if (url.pathname.startsWith('/api/superhero')) {
+    event.respondWith(fetch(request));
   } else {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {

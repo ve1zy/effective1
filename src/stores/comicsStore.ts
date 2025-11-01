@@ -1,14 +1,14 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { toast } from 'react-toastify';
-import { getComics, getComicById } from '../api/marvel';
-import { Comic } from '../api/marvel';
+import { getSuperheroes, getSuperheroById, Superhero } from '../api/superhero';
 import i18next from 'i18next';
+
 class ComicsStore {
-  comics: Comic[] = [];
+  comics: Superhero[] = [];
   searchQuery: string | null = null;
-  currentComic: Comic | null = null;
-  relatedComics: Comic[] = [];
-  favorites: Comic[] = [];
+  currentComic: Superhero | null = null;
+  relatedComics: Superhero[] = [];
+  favorites: Superhero[] = [];
   offset = 0;
   total = 0;
   limit = 8;
@@ -28,10 +28,14 @@ class ComicsStore {
         try {
           const data = JSON.stringify(favorites.map(c => ({
             id: c.id,
-            title: c.title,
-            thumbnail: c.thumbnail
+            name: c.name,
+            thumbnail: (
+              (c.image && typeof c.image === 'object' && 'url' in c.image && c.image.url)
+              || (c as any)['image']
+              || '/placeholder-comic.jpg'
+            )
           })));
-          localStorage.setItem('marvel_favorites', data);
+          localStorage.setItem('superhero_favorites', data);
           console.log('Saved favorites:', data);
         } catch (error) {
           console.error('Save error:', error);
@@ -50,9 +54,7 @@ class ComicsStore {
         this.hasMore = true;
       });
   
-      const response = await getComics(0, this.limit, {
-        titleStartsWith: query,
-      });
+      const response = await getSuperheroes(0, this.limit, query);
   
       runInAction(() => {
         this.comics = response.results;
@@ -62,7 +64,7 @@ class ComicsStore {
       });
     } catch (err) {
       runInAction(() => {
-        this.error = err instanceof Error ? err.message : 'Failed to search comics';
+        this.error = err instanceof Error ? err.message : 'Failed to search superheroes';
       });
     } finally {
       runInAction(() => {
@@ -72,19 +74,16 @@ class ComicsStore {
   };
   loadMoreComics = async () => {
     if (this.isLoadingMore || !this.hasMore) return;
-  
+
     try {
       runInAction(() => {
         this.isLoadingMore = true;
       });
-  
-      const additionalParams: Record<string, any> = {};
-      if (this.searchQuery) {
-        additionalParams.titleStartsWith = this.searchQuery;
-      }
-  
-      const response = await getComics(this.comics.length, this.limit, additionalParams);
-  
+
+      // For Superhero API, we'll just fetch more superheroes without specific parameters
+      // since the API doesn't support offset/limit in the same way
+      const response = await getSuperheroes(this.comics.length, this.limit, this.searchQuery || '');
+
       runInAction(() => {
         this.comics = [...this.comics, ...response.results];
         this.hasMore = this.comics.length < response.total;
@@ -92,7 +91,7 @@ class ComicsStore {
       });
     } catch (err) {
       runInAction(() => {
-        this.error = err instanceof Error ? err.message : 'Failed to load more comics';
+        this.error = err instanceof Error ? err.message : 'Failed to load more superheroes';
         this.isLoadingMore = false;
       });
     }
@@ -116,7 +115,7 @@ class ComicsStore {
     reaction(
       () => this.favorites,
       (favorites) => {
-        localStorage.setItem('favorites', JSON.stringify(favorites));
+        localStorage.setItem('superhero_favorites', JSON.stringify(favorites));
       }
     );
 
@@ -127,14 +126,14 @@ class ComicsStore {
   }
   
   loadComics = async (page: number = this.currentPage) => {
-    const offset = (page - 1) * this.limit; 
+    const offset = (page - 1) * this.limit;
     try {
       runInAction(() => {
         this.loading = true;
         this.error = null;
       });
-  
-      const response = await getComics(offset, this.limit);
+
+      const response = await getSuperheroes(offset, this.limit, '');
       
       runInAction(() => {
         this.comics = response.results;
@@ -145,24 +144,26 @@ class ComicsStore {
     } catch (err) {
     }
   };
-  loadComicDetails = async (id: number) => {
+  loadComicDetails = async (id: string) => {
     try {
       runInAction(() => {
         this.loading = true;
         this.error = null;
         this.relatedComics = [];
       });
-  
-      const comic = await getComicById(id);
+
+      const superhero = await getSuperheroById(id);
       
       runInAction(() => {
-        this.currentComic = comic;
+        this.currentComic = superhero;
       });
-  
-      await this.loadRelatedComics(comic);
+
+      if (superhero) {
+        await this.loadRelatedComics(superhero);
+      }
     } catch (err) {
       runInAction(() => {
-        this.error = err instanceof Error ? err.message : 'Failed to load comic details';
+        this.error = err instanceof Error ? err.message : 'Failed to load superhero details';
       });
     } finally {
       runInAction(() => {
@@ -171,62 +172,40 @@ class ComicsStore {
     }
   };
 
-  loadRelatedComics = async (comic: Comic) => {
+  loadRelatedComics = async (superhero: Superhero) => {
     try {
       runInAction(() => {
         this.loading = true;
         this.relatedComics = [];
       });
-  
-      if (comic.series) {
-        const seriesId = comic.series.resourceURI.split('/').pop();
-        const seriesResponse = await getComics(0, 20, {
-          series: seriesId,
-          orderBy: '-modified',
-          limit: 8
-        });
-  
-        const seriesComics = seriesResponse.results.filter(c => c.id !== comic.id);
+
+      // For superhero API, we'll just search for similar superheroes based on name
+      // Since the API doesn't have series or other relations like Marvel API
+      const firstNamePart = superhero.name.split(' ')[0];
+      if (firstNamePart && firstNamePart.length > 2) {
+        const relatedResponse = await getSuperheroes(0, 20, firstNamePart);
         
-        if (seriesComics.length > 0) {
+        const relatedSuperheroes = relatedResponse.results.filter(c => c.id !== superhero.id);
+        
+        if (relatedSuperheroes.length > 0) {
           runInAction(() => {
-            this.relatedComics = seriesComics.slice(0, 4);
+            this.relatedComics = relatedSuperheroes.slice(0, 4);
           });
           return;
         }
       }
-  
-      const baseTitle = comic.title.replace(/#\d+.*/, '').trim();
-      if (baseTitle) {
-        const titleResponse = await getComics(0, 20, {
-          titleStartsWith: baseTitle,
-          orderBy: '-modified',
-          limit: 10
-        });
-  
-        const titleComics = titleResponse.results.filter(c => c.id !== comic.id);
-        
-        if (titleComics.length > 0) {
-          runInAction(() => {
-            this.relatedComics = titleComics.slice(0, 4);
-          });
-          return;
-        }
-      }
-  
-      const randomResponse = await getComics(Math.floor(Math.random() * 100), 4, {
-        orderBy: '-modified',
-        limit: 4
-      });
-  
+
+      // If no related superheroes found by name, get random superheroes
+      const randomResponse = await getSuperheroes(Math.floor(Math.random() * 100), 4, '');
+      
       runInAction(() => {
         this.relatedComics = randomResponse.results
-          .filter(c => c.id !== comic.id)
+          .filter(c => c.id !== superhero.id)
           .slice(0, 4);
       });
-  
+
     } catch (err) {
-      console.error('Failed to load related comics:', err);
+      console.error('Failed to load related superheroes:', err);
       runInAction(() => {
         this.relatedComics = [];
       });
@@ -240,7 +219,7 @@ class ComicsStore {
 
   loadFavorites = () => {
     try {
-      const data = localStorage.getItem('marvel_favorites');
+      const data = localStorage.getItem('superhero_favorites');
       if (data) {
         this.favorites = JSON.parse(data);
         console.log('Loaded favorites:', this.favorites);
@@ -250,18 +229,18 @@ class ComicsStore {
     }
   };
 
-  toggleFavorite = (comic: Comic) => {
-    const exists = this.favorites.some(c => c.id === comic.id);
+  toggleFavorite = (superhero: Superhero) => {
+    const exists = this.favorites.some(c => c.id === superhero.id);
     if (exists) {
-      this.favorites = this.favorites.filter(c => c.id !== comic.id);
+      this.favorites = this.favorites.filter(c => c.id !== superhero.id);
       toast.info(i18next.t('removeFavorite'));
     } else {
-      this.favorites.push({ ...comic });
+      this.favorites.push({ ...superhero });
       toast.success(i18next.t('addFavorite'));
     }
   };
 
-  isFavorite = (id: number) => {
+  isFavorite = (id: string) => {
     return this.favorites.some(c => c.id === id);
   };
 }
