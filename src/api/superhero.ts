@@ -11,7 +11,7 @@ const getBaseUrl = () => {
       return `/api/superhero/${accessToken}`;
     } else {
       // На продакшене используем прямой URL, который будет переписан на Vercel
-      return `/api/superhero/${accessToken}`;
+      return `/api/superhero`;
     }
   } else {
     // Серверная сторона (SSR) - использовать прямой URL
