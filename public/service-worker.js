@@ -67,19 +67,22 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Пропускаем кэширование API-запросов к Superhero API
-  if (url.pathname.startsWith('/api/superhero')) {
+  // Пропускаем кэширование API-запросов к Superhero API и изображений
+  if (url.pathname.startsWith('/api/superhero') || url.pathname.includes('/pictures2/') || request.destination === 'image') {
     event.respondWith(fetch(request));
   } else {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         if (cachedResponse) {
-          console.log(`[Service Worker] Serving from cache: ${request.url}`);
+          // Не выводим лог для изображений
+          if (request.destination !== 'image') {
+            console.log(`[Service Worker] Serving from cache: ${request.url}`);
+          }
           return cachedResponse;
         }
         return fetch(request).then((response) => {
-          // Кэшируем только локальные ресурсы, а не внешние изображения
-          if (request.url.startsWith(self.location.origin) && response.status === 200 && response.type === 'basic') {
+          // Кэшируем только основные ресурсы приложения, а не изображения
+          if (request.url.startsWith(self.location.origin) && response.status === 200 && response.type === 'basic' && request.destination !== 'image') {
             const responseToCache = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, responseToCache);
