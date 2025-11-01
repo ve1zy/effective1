@@ -67,8 +67,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Пропускаем кэширование API-запросов к Superhero API и изображений
-  if (url.pathname.startsWith('/api/superhero') || url.pathname.includes('/pictures2/') || request.destination === 'image') {
+  // Обрабатываем изображения с superherodb.com через прокси
+  if (url.hostname.includes('superherodb.com')) {
+    const proxiedUrl = new URL('/pictures2/' + url.pathname.split('/pictures2/')[1], self.location.origin);
+    event.respondWith(fetch(proxiedUrl.href));
+  }
+  // Пропускаем кэширование API-запросов к Superhero API
+  else if (url.pathname.startsWith('/api/superhero')) {
     event.respondWith(fetch(request));
   } else {
     event.respondWith(
