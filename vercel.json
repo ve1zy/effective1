@@ -1,5 +1,6 @@
 {
 "rewrites": [
+    { "source": "/api/superhero/(.*)", "destination": "https://superheroapi.com/api/4140ddbdf3378de017c4cedbc8082221/:path*" },
     { "source": "/service-worker.js", "destination": "/service-worker.js" },
     { "source": "/(.*)", "destination": "/" }
   ],
