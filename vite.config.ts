@@ -8,7 +8,7 @@ export default defineConfig({
       '/api/superhero': {
         target: 'https://superheroapi.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/superhero/, ''),
+        rewrite: (path) => path.replace(/^\/api\/superhero/, '/api'),
       },
     },
   },

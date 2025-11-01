@@ -73,6 +73,7 @@ const ComicDetails = observer(() => {
               src={getSafeImageUrl(
                 (currentComic.image && typeof currentComic.image === 'object' && 'url' in currentComic.image && currentComic.image.url)
                 || (currentComic as any)['image']
+                || (currentComic as any).image
                 || '/placeholder-comic.jpg'
               )}
               alt={currentComic.name}

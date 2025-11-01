@@ -40,6 +40,7 @@ const ComicCard = observer(({
             src={getSafeImageUrl(
               (comic.image && typeof comic.image === 'object' && 'url' in comic.image && comic.image.url)
               || (comic as any)['image']
+              || (comic as any).image
               || '/placeholder-comic.jpg'
             )}
             alt={comic.name}
