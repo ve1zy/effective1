@@ -1,8 +1,11 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { toast } from 'react-toastify';
-import { getComics, getComicById } from '../api/comicvine';
-import { Comic } from '../api/comicvine';
+import { getComics, getComicById, Comic } from '../api/jikan';
 import i18next from 'i18next';
+
+const FAVORITES_STORAGE_KEY = 'manga_explorer_favorites';
+const LEGACY_STORAGE_KEY = 'comicvine_favorites';
+
 class ComicsStore {
   comics: Comic[] = [];
   searchQuery: string | null = null;
@@ -17,28 +20,13 @@ class ComicsStore {
   currentPage = 1;
   hasMore = true;
   isLoadingMore = false;
+
   constructor() {
     makeAutoObservable(this);
     this.initStore();
-     this.loadFavorites();
-    
-    reaction(
-      () => this.favorites.slice(),
-      (favorites) => {
-        try {
-          const data = JSON.stringify(favorites.map(c => ({
-            id: c.id,
-            title: c.title,
-            thumbnail: c.thumbnail
-          })));
-          localStorage.setItem('comicvine_favorites', data);
-          console.log('Saved favorites:', data);
-        } catch (error) {
-          console.error('Save error:', error);
-        }
-      }
-    );
+    this.loadFavorites();
   }
+
   searchComics = async (query: string) => {
     try {
       runInAction(() => {
@@ -49,11 +37,11 @@ class ComicsStore {
         this.offset = 0;
         this.hasMore = true;
       });
-  
+
       const response = await getComics(0, this.limit, {
         titleStartsWith: query,
       });
-  
+
       runInAction(() => {
         this.comics = response.results;
         this.total = response.total;
@@ -70,21 +58,22 @@ class ComicsStore {
       });
     }
   };
+
   loadMoreComics = async () => {
     if (this.isLoadingMore || !this.hasMore) return;
-  
+
     try {
       runInAction(() => {
         this.isLoadingMore = true;
       });
-  
+
       const additionalParams: Record<string, any> = {};
       if (this.searchQuery) {
         additionalParams.titleStartsWith = this.searchQuery;
       }
-  
+
       const response = await getComics(this.comics.length, this.limit, additionalParams);
-  
+
       runInAction(() => {
         this.comics = [...this.comics, ...response.results];
         this.hasMore = this.comics.length < response.total;
@@ -104,9 +93,11 @@ class ComicsStore {
     this.hasMore = true;
     this.isLoadingMore = false;
   };
+
   setCurrentPage = (page: number) => {
     this.currentPage = page;
   };
+
   private initStore() {
     this.setupReactions();
     this.loadFavorites();
@@ -116,7 +107,7 @@ class ComicsStore {
     reaction(
       () => this.favorites,
       (favorites) => {
-        localStorage.setItem('favorites', JSON.stringify(favorites));
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
       }
     );
 
@@ -125,17 +116,17 @@ class ComicsStore {
       (error) => error && toast.error(error)
     );
   }
-  
+
   loadComics = async (page: number = this.currentPage) => {
-    const offset = (page - 1) * this.limit; 
+    const offset = (page - 1) * this.limit;
     try {
       runInAction(() => {
         this.loading = true;
         this.error = null;
       });
-  
+
       const response = await getComics(offset, this.limit);
-      
+
       runInAction(() => {
         this.comics = response.results;
         this.total = response.total;
@@ -145,6 +136,7 @@ class ComicsStore {
     } catch (err) {
     }
   };
+
   loadComicDetails = async (id: number) => {
     try {
       runInAction(() => {
@@ -152,13 +144,13 @@ class ComicsStore {
         this.error = null;
         this.relatedComics = [];
       });
-  
+
       const comic = await getComicById(id);
-      
+
       runInAction(() => {
         this.currentComic = comic;
       });
-  
+
       await this.loadRelatedComics(comic);
     } catch (err) {
       runInAction(() => {
@@ -189,9 +181,9 @@ class ComicsStore {
             field_list: 'id,name,deck,image,issue_number,cover_date,description',
             limit: 8
           });
-          
+
           const seriesComics = seriesResponse.results.filter(c => c.id !== comic.id);
-          
+
           if (seriesComics.length > 0) {
             runInAction(() => {
               this.relatedComics = seriesComics.slice(0, 4);
@@ -200,7 +192,7 @@ class ComicsStore {
           }
         }
       }
-      
+
       // Если не удалось найти по серии, ищем по названию
       const baseTitle = comic.title.replace(/#\d+.*/, '').trim();
       if (baseTitle) {
@@ -209,9 +201,9 @@ class ComicsStore {
           field_list: 'id,name,deck,image,issue_number,cover_date,description',
           limit: 10
         });
-        
+
         const titleComics = titleResponse.results.filter(c => c.id !== comic.id);
-        
+
         if (titleComics.length > 0) {
           runInAction(() => {
             this.relatedComics = titleComics.slice(0, 4);
@@ -219,19 +211,18 @@ class ComicsStore {
           return;
         }
       }
-      
+
       // Если не удалось найти по названию, получаем случайные комиксы
       const randomResponse = await getComics(Math.floor(Math.random() * 100), 4, {
         field_list: 'id,name,deck,image,issue_number,cover_date,description',
         limit: 4
       });
-      
+
       runInAction(() => {
         this.relatedComics = randomResponse.results
           .filter(c => c.id !== comic.id)
           .slice(0, 4);
       });
-
     } catch (err) {
       console.error('Failed to load related comics:', err);
       runInAction(() => {
@@ -243,14 +234,18 @@ class ComicsStore {
       });
     }
   };
-  
 
   loadFavorites = () => {
     try {
-      const data = localStorage.getItem('comicvine_favorites');
-      if (data) {
-        this.favorites = JSON.parse(data);
+      const storedData = localStorage.getItem(FAVORITES_STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (storedData) {
+        this.favorites = JSON.parse(storedData);
         console.log('Loaded favorites:', this.favorites);
+
+        if (!localStorage.getItem(FAVORITES_STORAGE_KEY)) {
+          localStorage.setItem(FAVORITES_STORAGE_KEY, storedData);
+          localStorage.removeItem(LEGACY_STORAGE_KEY);
+        }
       }
     } catch (error) {
       console.error('Load error:', error);

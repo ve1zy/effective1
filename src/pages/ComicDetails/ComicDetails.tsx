@@ -39,13 +39,19 @@ const ComicDetails = observer(() => {
       </div>
     );
   }
-  const getSafeImageUrl = (url: string) => {
-    let safeUrl = url.replace('http://', 'https://');
 
-    safeUrl += `?t=${new Date().getTime()}`;
+  const getSafeImageUrl = (url?: string) => {
+    if (!url) {
+      return '/placeholder-comic.jpg';
+    }
 
-    return safeUrl;
+    if (url.startsWith('http://')) {
+      return `https://${url.substring('http://'.length)}`;
+    }
+
+    return url;
   };
+
   if (!currentComic) {
     return (
       <div className={styles.detailsContainer}>

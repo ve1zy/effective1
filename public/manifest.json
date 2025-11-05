@@ -1,7 +1,7 @@
 {
-    "short_name": "Comic Vine Comics",
-    "name": "Comic Vine Comics App",
-    "description": "Explore and manage your favorite Comic Vine comics.",
+    "short_name": "Manga Explorer",
+    "name": "Manga Explorer App",
+    "description": "Explore and manage your favorite manga from Jikan.",
     "icons": [
       {
         "src": "static/images/effective.jpg"

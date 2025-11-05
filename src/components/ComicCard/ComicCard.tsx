@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import { comicsStore } from '../../stores/comicsStore';
-import { Comic } from '../../api/comicvine';
+import { Comic } from '../../api/jikan';
 import styles from './ComicCard.module.scss';
 import { useState } from 'react';
 interface ComicCardProps {
@@ -17,12 +17,16 @@ const ComicCard = observer(({
 }: ComicCardProps) => {
   const { toggleFavorite } = comicsStore;
   const [isHovered, setIsHovered] = useState(false);
-  const getSafeImageUrl = (url: string) => {
-    let safeUrl = url.replace('http://', 'https://');
+  const getSafeImageUrl = (url?: string) => {
+    if (!url) {
+      return '/placeholder-comic.jpg';
+    }
 
-    safeUrl += `?t=${new Date().getTime()}`;
+    if (url.startsWith('http://')) {
+      return `https://${url.substring('http://'.length)}`;
+    }
 
-    return safeUrl;
+    return url;
   };
   const isFavorite = isFavoriteProp ?? comicsStore.isFavorite(comic.id);
 

@@ -2,7 +2,8 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import ComicCard from '../../components/ComicCard/ComicCard';
 import { comicsStore } from '../../stores/comicsStore';
-import { Comic } from '../../api/comicvine';
+import { Comic } from '../../api/jikan';
+
 import styles from './Favorite.module.scss';
 import { useTranslation } from 'react-i18next';
 const Favorite = observer(() => {

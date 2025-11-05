@@ -16,8 +16,8 @@ i18n
         translation: {
           "searchPlaceholder": "Search comics...",
           "searchButton": "Search",
-          "comicsTitle": "Comic Vine Comics",
-          "favoriteComics": "Favorite Comics",
+          "comicsTitle": "Manga Explorer",
+          "favoriteComics": "Favorite Manga",
           "favoritesTitle": "Favorites",
           "noFavorites": "No favorites yet. Add some comics to your favorites!",
           "loading": "Loading...",
@@ -38,8 +38,8 @@ i18n
         translation: {
           "searchPlaceholder": "Поиск комиксов...",
           "searchButton": "Поиск",
-          "comicsTitle": "Комиксы Comic Vine",
-          "favoriteComics": "Избранные комиксы",
+          "comicsTitle": "Каталог манги",
+          "favoriteComics": "Избранная манга",
           "favoritesTitle": "Избранное",
           "noFavorites": "Пока нет избранного. Добавьте комиксы в избранное!",
           "loading": "Загрузка...",

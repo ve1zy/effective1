@@ -67,7 +67,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.origin === "https://comicvine.gamespot.com") {
+  const isExternalApiRequest = url.origin === "https://comicvine.gamespot.com" || url.origin === "https://api.jikan.moe";
+
+  if (isExternalApiRequest) {
     return;
   } else {
     event.respondWith(

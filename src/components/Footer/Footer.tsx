@@ -5,10 +5,10 @@ const Footer = () => {
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.logo}>Marvel</div>
-      <p>Data provided by Comic Vine. © {currentYear} COMIC VINE</p>
-      <a href="https://comicvine.gamespot.com/api/" target="_blank" rel="noopener noreferrer">
-        comicvine.gamespot.com/api/
+      <div className={styles.logo}>Manga Explorer</div>
+      <p>Data provided by Jikan. {currentYear} JIKAN</p>
+      <a href="https://docs.api.jikan.moe/" target="_blank" rel="noopener noreferrer">
+        docs.api.jikan.moe
       </a>
     </footer>
   );

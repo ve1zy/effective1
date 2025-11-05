@@ -8,7 +8,7 @@ const Header = () => {
   const { t } = useTranslation();
   return (
     <header className={styles.header}>
-      <div className={styles.logo}>Comic Vine</div>
+      <div className={styles.logo}>Manga Explorer</div>
       <div className={styles.navContainer}>
       <nav>
           <NavLink 
