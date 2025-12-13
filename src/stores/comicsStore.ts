@@ -253,14 +253,16 @@ class ComicsStore {
   };
 
   toggleFavorite = (comic: Comic) => {
-    const exists = this.favorites.some(c => c.id === comic.id);
-    if (exists) {
-      this.favorites = this.favorites.filter(c => c.id !== comic.id);
-      toast.info(i18next.t('removeFavorite'));
-    } else {
-      this.favorites.push({ ...comic });
-      toast.success(i18next.t('addFavorite'));
-    }
+    runInAction(() => {
+      const exists = this.favorites.some(c => c.id === comic.id);
+      if (exists) {
+        this.favorites = this.favorites.filter(c => c.id !== comic.id);
+        toast.info(i18next.t('removeFavorite'));
+      } else {
+        this.favorites = [...this.favorites, { ...comic }];
+        toast.success(i18next.t('addFavorite'));
+      }
+    });
   };
 
   isFavorite = (id: number) => {
